@@ -82,4 +82,4 @@ if __name__ == "__main__":
             title="here is a reminder! It has been 5 minutes",
             timeout=10
         )
-        time.sleep(5)
+        time.sleep(300)
