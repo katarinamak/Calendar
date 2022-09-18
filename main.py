@@ -7,6 +7,7 @@ from datetime import date
 import time
 import requests
 from plyer import notification
+import pyobjus
 
 mydb = mysql.connector.connect(
     host="localhost",
@@ -17,10 +18,12 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
+
 # sqlFormula = "INSERT INTO dates (type, year, message) VALUES (%s, %s, %s)"
 
 # sqlFormula = "CREATE TABLE events (type VARCHAR(255), day INTEGER(2), month INTEGER(2), year INTEGER(4), " \
 #              "message VARCHAR(255))"
+# sqlFormula = "ALTER TABLE events ADD notify INTEGER(100)"
 # dates = [("birthday", 2022, "Ivan's birthday"),
 # ("assignment", 2022, "cs341"),
 # ("assignment", 2022, "cs348"),
@@ -40,7 +43,16 @@ def openEventWindow():
     new_window.title("Enter event information")
     new_window.geometry("200x200")
     Label(new_window,
-          text="Give the details of your event", bg="#C1FFC1").pack()
+          text="Give the details of your event").pack()
+
+    Label(new_window,
+          text="What type of event are you entering").pack()
+    label = Label(new_window, text="")
+    label.pack()
+
+    entry = Entry(new_window, width=50)
+    entry.focus_set()
+    entry.pack()
 
 
 def extractDate(self):
@@ -75,11 +87,11 @@ if __name__ == "__main__":
     Button(gui, text="Add Event",
            command=openEventWindow).pack(pady=20)
 
+    notification.notify(
+        title="It's been an hour!! Switch to a new task",
+        timeout=10
+    )
+
     gui.mainloop()
 
-    while True:
-        notification.notify(
-            title="here is a reminder! It has been 5 minutes",
-            timeout=10
-        )
-        time.sleep(300)
+    time.sleep(3600)
