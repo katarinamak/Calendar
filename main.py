@@ -23,7 +23,7 @@ mycursor = mydb.cursor()
 
 # sqlFormula = "CREATE TABLE events (type VARCHAR(255), day INTEGER(2), month INTEGER(2), year INTEGER(4), " \
 #              "message VARCHAR(255))"
-# sqlFormula = "ALTER TABLE events ADD notify INTEGER(100)"
+# sqlFormula = "ALTER TABLE events DROP COLUMN message"
 # dates = [("birthday", 2022, "Ivan's birthday"),
 # ("assignment", 2022, "cs341"),
 # ("assignment", 2022, "cs348"),
@@ -33,15 +33,22 @@ mycursor = mydb.cursor()
 # mydb.commit()
 
 
-def addEvent():
-    my_label = Label(gui, text="New event!!")
-    my_label.pack()
+# Save the event to the db
+def storeEvent(event_type, selected_date):
+    inp = event_type.get()
+    tokens = selected_date.split(sep='-')
+    print(tokens)
+    new_event = (inp, tokens[2], tokens[1], tokens[0])
+    # sql_formula = "INSERT INTO events (type, day, month, year) VALUES(%s, %s, %s, %s)"
+    # mycursor.execute(sql_formula, new_event)
+    # mydb.commit()
 
 
-def openEventWindow():
+# Open a new window and get information about the event
+def openEventWindow(calendar, selected):
     new_window = Toplevel(gui)
     new_window.title("Enter event information")
-    new_window.geometry("200x200")
+    new_window.geometry("300x300")
     Label(new_window,
           text="Give the details of your event").pack()
 
@@ -50,13 +57,22 @@ def openEventWindow():
     label = Label(new_window, text="")
     label.pack()
 
-    entry = Entry(new_window, width=50)
+    event_type = StringVar()
+
+    entry = Entry(new_window, textvariable=event_type, width=50)
     entry.focus_set()
     entry.pack()
 
+    # selected_date = calendar.bind("<<CalendarSelected>>", extractDate)
+
+    Button(new_window,
+           text="Save",
+           command=lambda: storeEvent(event_type, selected)).pack(pady=20)
+
 
 def extractDate(self):
-    Label(gui, text=cal.get_date(), fg="#68838B").pack()
+    print(cal.get_date())
+    # return cal.get_date()
 
 
 # Driver Code
@@ -82,16 +98,18 @@ if __name__ == "__main__":
                    day=day)
     cal.pack(pady=20, fill="both", expand=True)
 
-    cal.bind("<<CalendarSelected>>", extractDate)
+    selected = cal.bind("<<CalendarSelected>>", extractDate)
 
+    print(selected)
     Button(gui, text="Add Event",
-           command=openEventWindow).pack(pady=20)
+           command=lambda: openEventWindow(cal, selected)).pack(pady=20)
 
+    # notification test
     notification.notify(
         title="It's been an hour!! Switch to a new task",
         timeout=10
     )
-
     gui.mainloop()
-
     time.sleep(3600)
+
+
