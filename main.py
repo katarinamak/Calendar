@@ -12,7 +12,7 @@ import pyobjus
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="Butterfly123",
+    passwd="password",
     database="caldb"
 )
 
