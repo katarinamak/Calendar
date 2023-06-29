@@ -4,7 +4,7 @@ from tkinter import *
 from tkcalendar import Calendar
 
 import mysql.connector
-from datetime import date
+from datetime import date, datetime
 import time
 import requests
 from plyer import notification
@@ -19,20 +19,9 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-
-# sqlFormula = "INSERT INTO dates (type, year, message) VALUES (%s, %s, %s)"
-
-# Run this line once to set up the Table
+# Run this line once to set up the Table the first time then don't run it again
 # sqlFormula = "CREATE TABLE events (type VARCHAR(255), day INTEGER(2), month INTEGER(2), year INTEGER(4), " \
 #              "message VARCHAR(255))"
-# dates = [("birthday", 2022, "Ivan's birthday"),
-# ("assignment", 2022, "cs341"),
-# ("assignment", 2022, "cs348"),
-# ("birthday", 2022, "mom's birthday")]
-
-
-# mycursor.execute(sqlFormula)
-# mydb.commit()
 
 
 # Save the event to the db
@@ -115,9 +104,18 @@ if __name__ == "__main__":
            command=lambda: openEventWindow(cal, selectedDate)).pack(pady=20)
 
     # notification test
-    notification.notify(
-        title="It's been an hour!! Switch to a new task",
-        timeout=10
-    )
+    today = datetime.today().strftime('%Y-%m-%d')
+    datetokens = today.split(sep='-')
+    datequery = "SELECT COUNT(*) FROM caldb.events WHERE year = %s AND month = %s AND day = %s"
+    mycursor.execute(datequery, datetokens)
+    count = mycursor.fetchone()[0]
+    print(count)
+    print(datetokens)
+    if count > 0:
+        notification.notify(
+            title="Check your calendar - you have " + str(count) + " events today",
+            timeout=5
+        )
+
     gui.mainloop()
     time.sleep(3600)
